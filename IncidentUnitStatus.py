@@ -100,4 +100,15 @@ df['AVL_Timestamp'] = pd.to_datetime(df['AVL_Timestamp'], format = '%Y%m%d%H%M%S
 df['CAD_Timestamp'] = pd.to_datetime(df['CAD_Timestamp'], format = '%Y%m%d%H%M%S')
 
 # create delta col
-df['CAD_AVL_Timestamp_DELTA'] = df['AVL_Timestamp'] - df['CAD_Timestamp']
+df['CAD_AVL_Timestamp_DELTA'] = abs(df['AVL_Timestamp'] - df['CAD_Timestamp'])
+
+# moving and not moving statuses
+moving_statuses = ['ER','TR']
+not_moving = ['AM','AQ','OS','OT','TA','WP']
+
+# create Status Speed Match
+df['Status_Speed_Match'] = np.where((df['AVL_Speed'].isin(['Moving', 'moving']) & df['CAD_UnitStatus'].isin(['ER'])), True, False)
+
+# create a subset of data that only has Cad status = er
+er = df[df['CAD_UnitStatus'].isin(['ER'])]
+er[er['Status_Speed_Match'] == False]
