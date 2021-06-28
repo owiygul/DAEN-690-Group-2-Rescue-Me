@@ -112,3 +112,6 @@ df['Status_Speed_Match'] = np.where((df['AVL_Speed'].isin(['Moving', 'moving']) 
 # create a subset of data that only has Cad status = er
 er = df[df['CAD_UnitStatus'].isin(['ER'])]
 er[er['Status_Speed_Match'] == False]
+
+# what percentage of ER status are not moving?
+len(er[er['Status_Speed_Match'] == False]) / len(er) * 100
