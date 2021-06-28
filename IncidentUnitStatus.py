@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from datetime import datetime
 
 ## Data Imports
 avl = pd.read_csv('GMU_2021_Summer_AVL.csv')
@@ -19,7 +20,7 @@ avl.reset_index(inplace = True, drop = True)
 # I think doing an outer join is probably better cause then we can figure out what incidents do not have a
 # corresponding record between datasets
 df = avl.merge(cad, 
-               how = 'inner', 
+               how = 'outer', 
                left_on = ['AVL_IncidentNumber',
                           'AVL_UnitID',
                           'AVL_UnitStatus'],
@@ -89,3 +90,14 @@ df = avl.merge(cad,
 # CAD_UnitID                267
 # CAD_Timestamp             267
 # CAD_UnitStatus            267
+
+# convert object to timestamp proper
+df['AVL_Timestamp'] = df['AVL_Timestamp'].str.replace('ED', '')
+df['CAD_Timestamp'] = df['CAD_Timestamp'].str.replace('ED', '')
+df['AVL_Timestamp'] = df['AVL_Timestamp'].str.replace('ES', '')
+df['CAD_Timestamp'] = df['CAD_Timestamp'].str.replace('ES', '')
+df['AVL_Timestamp'] = pd.to_datetime(df['AVL_Timestamp'], format = '%Y%m%d%H%M%S')
+df['CAD_Timestamp'] = pd.to_datetime(df['CAD_Timestamp'], format = '%Y%m%d%H%M%S')
+
+# create delta col
+df['CAD_AVL_Timestamp_DELTA'] = df['AVL_Timestamp'] - df['CAD_Timestamp']
